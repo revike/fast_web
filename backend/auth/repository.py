@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from backend.auth.models import User
+from backend.auth.models import User, Profile
 
 
 class UserRepository:
@@ -20,6 +20,9 @@ class UserRepository:
                         hashed_password=hashed_password)
         self.db_session.add(new_user)
         try:
+            await self.db_session.flush()
+            profile = Profile(user=new_user.id)
+            self.db_session.add(profile)
             await self.db_session.flush()
             return new_user
         except IntegrityError as err:
@@ -36,6 +39,13 @@ class UserRepository:
         user = res.fetchone()
         if user:
             return user[0]
+
+    async def get_profile(self, user_id: int) -> Union[User | None]:
+        query = select(Profile).filter_by(user=user_id)
+        res = await self.db_session.execute(query)
+        profile = res.fetchone()
+        if profile:
+            return profile[0]
 
     async def get_user_by_phone(self) -> Union[User | None]: ...
 
