@@ -1,4 +1,4 @@
-Проект "Fast websocket"
+Проект "Fast web"
 ===========================
 
 
@@ -56,6 +56,12 @@ sourse venv/bin/activate
 
 ```
 pip install -r requirements.txt
+```
+
+* Делаем миграции
+
+```
+alembic upgrade heads
 ```
 
 * Запускаем main.py

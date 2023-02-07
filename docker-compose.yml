@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: uvicorn main:app --port 8000 --host 0.0.0.0 --reload
+
+volumes:
+  pg_data:
