@@ -45,6 +45,14 @@ class UserCreate(BaseModel):
         return value
 
 
+class UserCreateResponse(BaseModel):
+    id: int
+    email: EmailStr
+    username: str
+    phone: int
+    created: datetime
+
+
 class UserDeleteResponse(BaseModel):
     deleted_user_id: int
 
