@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from backend.auth.schemas import UserRead, UserCreate
+from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse
 from backend.auth.session import UserSession
 from backend.core.session import get_async_session
 
@@ -22,8 +22,9 @@ async def get_user(
     return user
 
 
-@user_router.post('/', response_model=UserRead)
+@user_router.post('/', response_model=UserCreateResponse)
 async def create_user(
         body: UserCreate,
-        session: AsyncSession = Depends(get_async_session)) -> UserRead:
+        session: AsyncSession = Depends(
+            get_async_session)) -> UserCreateResponse:
     return await UserSession(session).create_user(body)
