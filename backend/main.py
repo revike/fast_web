@@ -1,5 +1,5 @@
 import uvicorn as uvicorn
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 
 from backend.auth.endpoints import user_router
 

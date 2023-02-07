@@ -7,6 +7,15 @@ from pydantic import BaseModel, EmailStr, constr, validator
 from backend.auth.validators import validate_user_phone
 
 
+class ProfileRead(BaseModel):
+    id: int
+    first_name: Optional[str | None]
+    last_name: Optional[str | None]
+
+    class Config:
+        orm_mode = True
+
+
 class UserRead(BaseModel):
     id: int
     email: EmailStr
@@ -17,6 +26,7 @@ class UserRead(BaseModel):
     is_verified: bool = False
     created: datetime
     updated: datetime
+    profile: ProfileRead
 
     class Config:
         orm_mode = True

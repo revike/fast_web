@@ -13,18 +13,23 @@ class UserSession:
         async with self.session as session:
             async with session.begin():
                 user_rep = UserRepository(session)
-                user = await user_rep.get_user_by_id(user_id)
-                if user is not None:
+                profile = await user_rep.get_profile(user_id)
+                if profile is not None:
                     return UserRead(
-                        id=user.id,
-                        email=user.email,
-                        username=user.username,
-                        phone=user.phone,
-                        is_active=user.is_active,
-                        is_superuser=user.is_superuser,
-                        is_verified=user.is_verified,
-                        created=user.created,
-                        updated=user.updated
+                        id=profile.user_.id,
+                        email=profile.user_.email,
+                        username=profile.user_.username,
+                        phone=profile.user_.phone,
+                        is_active=profile.user_.is_active,
+                        is_superuser=profile.user_.is_superuser,
+                        is_verified=profile.user_.is_verified,
+                        created=profile.user_.created,
+                        updated=profile.user_.updated,
+                        profile={
+                            'id': profile.id,
+                            'first_name': profile.first_name,
+                            'last_name': profile.last_name,
+                        }
                     )
 
     async def create_user(self, body: UserCreate) -> UserRead:
@@ -42,5 +47,5 @@ class UserSession:
                 username=user.username,
                 phone=user.phone,
                 created=user.created,
-                updated=user.updated
+                updated=user.updated,
             )
