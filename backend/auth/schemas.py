@@ -9,6 +9,11 @@ from backend.auth.validators import validate_user_phone
 
 class UserList(BaseModel):
     id: int
+    email: EmailStr
+    username: str
+    phone: int
+    created: datetime
+    updated: datetime
 
 
 class ProfileRead(BaseModel):
