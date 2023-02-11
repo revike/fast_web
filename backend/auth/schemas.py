@@ -7,6 +7,10 @@ from pydantic import BaseModel, EmailStr, constr, validator
 from backend.auth.validators import validate_user_phone
 
 
+class UserList(BaseModel):
+    id: int
+
+
 class ProfileRead(BaseModel):
     id: int
     first_name: Optional[str | None]
