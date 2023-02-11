@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -7,6 +9,12 @@ from backend.auth.session import UserSession
 from backend.core.session import get_async_session
 
 user_router = APIRouter()
+
+@user_router.get('/list')
+async def get_users(
+        session: AsyncSession = Depends(get_async_session)) -> List:
+    users = await UserSession(session).get_users()
+    return users
 
 
 @user_router.get('/', response_model=UserRead)

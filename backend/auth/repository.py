@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -32,6 +32,12 @@ class UserRepository:
                 detail=error)
 
     async def delete_user(self) -> Union[int | None]: ...
+
+    async def get_users_list(self) -> List[User]:
+        query = select(User).filter_by()
+        res = await self.db_session.execute(query)
+        user = res.all()
+        return user
 
     async def get_user_by_id(self, user_id: int) -> Union[User | None]:
         query = select(User).filter_by(id=user_id)

@@ -1,13 +1,21 @@
-from typing import Union
+from typing import Union, List
 
 from backend.auth.repository import UserRepository
-from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse
+from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
+    UserList
 from backend.auth.utils import HashingPassword
 
 
 class UserSession:
     def __init__(self, session):
         self.session = session
+
+    async def get_users(self) -> List:
+        async with self.session as session:
+            async with session.begin():
+                user_rep = UserRepository(session)
+                users = await user_rep.get_users_list()
+                return [{'id': user[0].id} for user in users]
 
     async def get_user(self, user_id) -> Union[UserRead, None]:
         async with self.session as session:
