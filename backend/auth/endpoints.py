@@ -10,7 +10,8 @@ from backend.core.session import get_async_session
 
 user_router = APIRouter()
 
-@user_router.get('/list')
+
+@user_router.get('/list', response_model=List)
 async def get_users(
         session: AsyncSession = Depends(get_async_session)) -> List:
     users = await UserSession(session).get_users()

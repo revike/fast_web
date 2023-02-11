@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Dict
 
 from backend.auth.repository import UserRepository
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
@@ -10,12 +10,19 @@ class UserSession:
     def __init__(self, session):
         self.session = session
 
-    async def get_users(self) -> List:
+    async def get_users(self) -> List[Dict[str, UserList]]:
         async with self.session as session:
             async with session.begin():
                 user_rep = UserRepository(session)
                 users = await user_rep.get_users_list()
-                return [{'id': user[0].id} for user in users]
+                return [{
+                    'id': user[0].id,
+                    'email': user[0].email,
+                    'username': user[0].username,
+                    'phone': user[0].phone,
+                    'created': user[0].created,
+                    'updated': user[0].updated,
+                } for user in users]
 
     async def get_user(self, user_id) -> Union[UserRead, None]:
         async with self.session as session:
