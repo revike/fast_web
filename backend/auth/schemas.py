@@ -14,6 +14,7 @@ class UserList(BaseModel):
     phone: int
     created: datetime
     updated: datetime
+    is_active: bool
 
 
 class ProfileRead(BaseModel):
@@ -62,7 +63,7 @@ class UserCreateResponse(BaseModel):
     created: datetime
 
 
-class UserDeleteResponse(BaseModel):
+class UserDelete(BaseModel):
     deleted_user_id: int
 
 

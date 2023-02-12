@@ -22,6 +22,7 @@ class UserSession:
                     'phone': user[0].phone,
                     'created': user[0].created,
                     'updated': user[0].updated,
+                    'is_active': user[0].is_active
                 } for user in users]
 
     async def get_user(self, user_id) -> Union[UserRead, None]:
@@ -64,3 +65,9 @@ class UserSession:
                 phone=user.phone,
                 created=user.created,
             )
+
+    async def delete_user(self, user_id) -> Union[int, None]:
+        async with self.session.begin():
+            user_rep = UserRepository(self.session)
+            delete_user_id = await user_rep.delete_user(user_id)
+            return delete_user_id

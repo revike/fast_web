@@ -1,7 +1,7 @@
 from typing import Union, List
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -31,7 +31,15 @@ class UserRepository:
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=error)
 
-    async def delete_user(self) -> Union[int | None]: ...
+    async def delete_user(self, user_id) -> Union[int | None]:
+        query = select(User).filter_by(id=user_id, is_active=True)
+        res = await self.db_session.execute(query)
+        user = res.fetchone()
+        if user:
+            query_update = update(User).filter_by(
+                id=user_id, is_active=True).values(is_active=False)
+            await self.db_session.execute(query_update)
+            return user_id
 
     async def get_users_list(self) -> List[User]:
         query = select(User).filter_by()
@@ -53,8 +61,11 @@ class UserRepository:
         if profile:
             return profile[0]
 
-    async def get_user_by_phone(self) -> Union[User | None]: ...
+    async def get_user_by_phone(self) -> Union[User | None]:
+        ...
 
-    async def get_user_by_email(self) -> Union[User | None]: ...
+    async def get_user_by_email(self) -> Union[User | None]:
+        ...
 
-    async def update_user(self) -> Union[int | None]: ...
+    async def update_user(self) -> Union[int | None]:
+        ...
