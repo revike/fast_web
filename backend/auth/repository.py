@@ -67,5 +67,16 @@ class UserRepository:
     async def get_user_by_email(self) -> Union[User | None]:
         ...
 
-    async def update_user(self) -> Union[int | None]:
-        ...
+    async def update_user(self, user_id, **kwargs) -> Union[User | None]:
+        query = select(User).filter_by(id=user_id, is_active=True)
+        res = await self.db_session.execute(query)
+        user = res.fetchone()
+        if user:
+            try:
+                query_update = update(User).filter_by(
+                    id=user_id, is_active=True).values(kwargs)
+                await self.db_session.execute(query_update)
+                return user[0]
+            except IntegrityError as err:
+                raise HTTPException(
+                    status_code=503, detail=f'{err.__context__}')

@@ -2,7 +2,7 @@ from typing import Union, List, Dict
 
 from backend.auth.repository import UserRepository
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
-    UserList
+    UserList, UserUpdate
 from backend.auth.utils import HashingPassword
 
 
@@ -68,3 +68,14 @@ class UserSession:
         async with self.session.begin():
             delete_user_id = await self.user_rep.delete_user(user_id)
             return delete_user_id
+
+    async def update_user(
+            self, user_id: int, params: dict) -> Union[UserUpdate, None]:
+        async with self.session.begin():
+            user = await self.user_rep.update_user(user_id=user_id, **params)
+            if user:
+                return UserUpdate(
+                    username=user.username,
+                    phone=user.phone,
+                    email=user.email
+                )

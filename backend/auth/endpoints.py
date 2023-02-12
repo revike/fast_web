@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
-    UserList, UserDelete
+    UserList, UserDelete, UserUpdate
 from backend.auth.session import UserSession
 from backend.core.session import get_async_session
 
@@ -50,3 +50,27 @@ async def delete_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'User with id {user_id} not found')
     return UserDelete(deleted_user_id=delete_user_id)
+
+
+@user_router.patch('/update/{user_id}', response_model=UserUpdate)
+async def update_user(
+        user_id: int,
+        body: UserUpdate,
+        session: AsyncSession = Depends(get_async_session)) -> UserUpdate:
+    updated_user_params = body.dict(exclude_none=True)
+    if updated_user_params == {}:
+        raise HTTPException(
+            status_code=422,
+            detail='You must specify at least one user update option',
+        )
+    user = await UserSession(session).update_user(user_id, updated_user_params)
+    if user is None:
+        raise HTTPException(
+            status_code=404, detail=f"User with id {user_id} not found."
+        )
+
+    return UserUpdate(
+        username=user.username,
+        phone=user.phone,
+        email=user.email
+    )

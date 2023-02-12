@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, constr, validator
+from pydantic import BaseModel, EmailStr, constr
 
-from backend.auth.validators import validate_user_phone
+from backend.auth.validators import DefaultModel
 
 
 class UserList(BaseModel):
@@ -42,20 +41,20 @@ class UserRead(BaseModel):
         orm_mode = True
 
 
-class UserCreate(BaseModel):
+class UserCreate(DefaultModel):
     email: EmailStr
     phone: int
     password: str
 
-    @validator('phone')
-    def validate_phone(cls, value):
-        if not validate_user_phone(value):
-            raise HTTPException(
-                status_code=422, detail='Phone entered incorrectly')
-        return value
+    # @validator('phone')
+    # def validate_phone(cls, value):
+    #     if not validate_user_phone(value):
+    #         raise HTTPException(
+    #             status_code=422, detail='Phone entered incorrectly')
+    #     return value
 
 
-class UserCreateResponse(BaseModel):
+class UserCreateResponse(DefaultModel):
     id: int
     email: EmailStr
     username: str
@@ -67,11 +66,7 @@ class UserDelete(BaseModel):
     deleted_user_id: int
 
 
-class UserUpdatedResponse(BaseModel):
-    updated_user_id: int
-
-
-class UserUpdateRequest(BaseModel):
+class UserUpdate(DefaultModel):
     username: Optional[constr(min_length=1)]
     phone: int
     email: Optional[EmailStr]
