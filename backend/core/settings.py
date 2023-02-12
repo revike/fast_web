@@ -9,7 +9,10 @@ POSTGRES_HOST = os.environ.get('POSTGRES_HOST')
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 POSTGRES_DB = os.environ.get('POSTGRES_DB')
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='secret_key')
+ALGORITHM: str = os.environ.get('ALGORITHM', default="HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.environ.get(
+    'ACCESS_TOKEN_EXPIRE_MINUTES', default=30))
 
 """
 alembic init migrations

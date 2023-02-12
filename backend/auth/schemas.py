@@ -41,17 +41,15 @@ class UserRead(BaseModel):
         orm_mode = True
 
 
+class UserLogin(UserRead):
+    access_token: str
+    token_type: str
+
+
 class UserCreate(DefaultModel):
     email: EmailStr
     phone: int
     password: str
-
-    # @validator('phone')
-    # def validate_phone(cls, value):
-    #     if not validate_user_phone(value):
-    #         raise HTTPException(
-    #             status_code=422, detail='Phone entered incorrectly')
-    #     return value
 
 
 class UserCreateResponse(DefaultModel):

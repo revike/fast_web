@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import ForeignKey, Column, Integer, String, Boolean, \
     TIMESTAMP, LargeBinary
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -35,5 +35,3 @@ class Profile(Base):
     photo_50 = Column(LargeBinary, nullable=True)
     photo_100 = Column(LargeBinary, nullable=True)
     photo_400 = Column(LargeBinary, nullable=True)
-
-    # user_ = relationship('User', backref='Profile', uselist=False)
