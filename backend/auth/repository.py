@@ -48,7 +48,7 @@ class UserRepository:
         return user
 
     async def get_user_by_id(self, user_id: int) -> Union[User | None]:
-        query = select(User).filter_by(id=user_id)
+        query = select(User).filter_by(id=user_id, is_active=True)
         res = await self.db_session.execute(query)
         user = res.fetchone()
         if user:

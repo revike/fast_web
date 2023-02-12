@@ -12,7 +12,7 @@ from backend.core.session import get_async_session
 user_router = APIRouter()
 
 
-@user_router.get('/list', response_model=List[UserList])
+@user_router.get('/', response_model=List[UserList])
 async def get_users(
         session: AsyncSession = Depends(
             get_async_session)) -> List[Dict[str, UserList]]:
@@ -20,7 +20,7 @@ async def get_users(
     return users
 
 
-@user_router.get('/', response_model=UserRead)
+@user_router.get('/{user_id}', response_model=UserRead)
 async def get_user(
         user_id: int,
         session: AsyncSession = Depends(get_async_session)) -> UserRead:

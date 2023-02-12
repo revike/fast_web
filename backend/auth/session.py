@@ -9,12 +9,12 @@ from backend.auth.utils import HashingPassword
 class UserSession:
     def __init__(self, session):
         self.session = session
+        self.user_rep = UserRepository(self.session)
 
     async def get_users(self) -> List[Dict[str, UserList]]:
         async with self.session as session:
             async with session.begin():
-                user_rep = UserRepository(session)
-                users = await user_rep.get_users_list()
+                users = await self.user_rep.get_users_list()
                 return [{
                     'id': user[0].id,
                     'email': user[0].email,
@@ -28,10 +28,9 @@ class UserSession:
     async def get_user(self, user_id) -> Union[UserRead, None]:
         async with self.session as session:
             async with session.begin():
-                user_rep = UserRepository(session)
-                user = await user_rep.get_user_by_id(user_id)
-                profile = await user_rep.get_profile(user_id)
-                if profile is not None:
+                user = await self.user_rep.get_user_by_id(user_id)
+                profile = await self.user_rep.get_profile(user_id)
+                if user is not None:
                     return UserRead(
                         id=user.id,
                         email=user.email,
@@ -51,8 +50,7 @@ class UserSession:
 
     async def create_user(self, body: UserCreate) -> UserCreateResponse:
         async with self.session.begin():
-            user_rep = UserRepository(self.session)
-            user = await user_rep.create_user(
+            user = await self.user_rep.create_user(
                 email=body.email,
                 phone=body.phone,
                 hashed_password=HashingPassword.get_password_hash(
@@ -68,6 +66,5 @@ class UserSession:
 
     async def delete_user(self, user_id) -> Union[int, None]:
         async with self.session.begin():
-            user_rep = UserRepository(self.session)
-            delete_user_id = await user_rep.delete_user(user_id)
+            delete_user_id = await self.user_rep.delete_user(user_id)
             return delete_user_id
