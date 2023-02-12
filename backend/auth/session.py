@@ -1,19 +1,12 @@
-from datetime import timedelta, datetime
-from typing import Union, List, Dict, Optional
+from datetime import timedelta
+from typing import Union, List, Dict
 
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from starlette import status
-
+from backend.auth.auth import Auth
 from backend.auth.repository import UserRepository
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
     UserList, UserUpdate, UserLogin
 from backend.auth.utils import HashingPassword
-from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, \
-    ALGORITHM
-
-oauth2_scheme = OAuth2PasswordBearer('/login/token')
+from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 class UserSession:
@@ -99,9 +92,9 @@ class UserSession:
             if check_password:
                 access_token_expires = timedelta(
                     minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-                access_token = self.create_access_token(
-                    data={"sub": user[0].phone,
-                          "other_custom_data": [1, 2, 3, 4]},
+                access_token = Auth().create_access_token(
+                    data={'some': 'payload', 'sub': f'{user[0].phone}',
+                          'other_custom_data': [1, 2, 3, 4]},
                     expires_delta=access_token_expires,
                 )
                 return UserLogin(
@@ -115,51 +108,10 @@ class UserSession:
                     created=user[0].created,
                     updated=user[0].updated,
                     access_token=access_token,
-                    token_type='BEARER',
+                    token_type='Bearer',
                     profile={
                         'id': user[1].id,
                         'first_name': user[1].first_name,
                         'last_name': user[1].last_name,
                     }
                 )
-
-    @staticmethod
-    def create_access_token(
-            data: dict, expires_delta: Optional[timedelta] = None):
-        to_encode = data.copy()
-        if expires_delta:
-            expire = datetime.utcnow() + expires_delta
-        else:
-            expire = datetime.utcnow() + timedelta(
-                minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-            )
-        to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(
-            to_encode, SECRET_KEY, algorithm=ALGORITHM
-        )
-        return encoded_jwt
-
-    async def get_user_by_phone_for_auth(self, phone: int):
-        async with self.session.begin():
-            return await UserRepository(self.session).get_user_by_phone(phone)
-
-    async def get_current_user_from_token(
-            self, token: str = Depends(oauth2_scheme)):
-        credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-        )
-        try:
-            payload = jwt.decode(
-                token, SECRET_KEY, algorithms=[ALGORITHM]
-            )
-            phone: int = payload.get("sub")
-            print(f'phone extracted is {phone}')
-            if phone is None:
-                raise credentials_exception
-        except JWTError:
-            raise credentials_exception
-        user = await self.get_user_by_phone_for_auth(phone=phone)
-        if user is None:
-            raise credentials_exception
-        return user
