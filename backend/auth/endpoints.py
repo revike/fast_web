@@ -1,11 +1,12 @@
 from typing import List, Dict
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
-    UserList, UserDelete, UserUpdate
+    UserList, UserDelete, UserUpdate, UserLogin
 from backend.auth.session import UserSession
 from backend.core.session import get_async_session
 
@@ -14,8 +15,8 @@ user_router = APIRouter()
 
 @user_router.get('/', response_model=List[UserList])
 async def get_users(
-        session: AsyncSession = Depends(
-            get_async_session)) -> List[Dict[str, UserList]]:
+        session: AsyncSession = Depends(get_async_session)
+) -> List[Dict[str, UserList]]:
     users = await UserSession(session).get_users()
     return users
 
@@ -33,7 +34,7 @@ async def get_user(
     return user
 
 
-@user_router.post('/', response_model=UserCreateResponse)
+@user_router.post('/register', response_model=UserCreateResponse)
 async def create_user(
         body: UserCreate,
         session: AsyncSession = Depends(
@@ -74,3 +75,16 @@ async def update_user(
         phone=user.phone,
         email=user.email
     )
+
+
+@user_router.post("/login", response_model=UserLogin)
+async def login_for_access_token(
+        data: OAuth2PasswordRequestForm = Depends(),
+        session: AsyncSession = Depends(get_async_session)) -> UserLogin:
+    user = await UserSession(session).auth_user(data.username, data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect phone or password",
+        )
+    return user

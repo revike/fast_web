@@ -61,11 +61,14 @@ class UserRepository:
         if profile:
             return profile[0]
 
-    async def get_user_by_phone(self) -> Union[User | None]:
-        ...
-
-    async def get_user_by_email(self) -> Union[User | None]:
-        ...
+    async def get_user_by_phone(self, phone) -> Union[User | None]:
+        query = select(User, Profile).join(
+            User, Profile.user == User.id).filter_by(
+            phone=phone, is_active=True)
+        res = await self.db_session.execute(query)
+        user = res.fetchone()
+        if user:
+            return user
 
     async def update_user(self, user_id, **kwargs) -> Union[User | None]:
         query = select(User).filter_by(id=user_id, is_active=True)
