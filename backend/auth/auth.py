@@ -9,7 +9,7 @@ from starlette import status
 from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, \
     ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer('/user/login')
+oauth2_scheme = OAuth2PasswordBearer('token')
 
 
 class Auth:
