@@ -5,7 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from backend.auth.models import Base
+from backend.note.models import Base as note
+from backend.auth.models import Base as auth
 from backend.core.settings import POSTGRES_USER, POSTGRES_PASSWORD, \
     POSTGRES_DB, POSTGRES_HOST, POSTGRES_PORT
 
@@ -29,7 +30,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = [auth.metadata, note.metadata]
 
 
 # other values from the config, defined by the needs of env.py,
