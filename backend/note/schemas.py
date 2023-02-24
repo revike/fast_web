@@ -9,3 +9,15 @@ class NoteList(BaseModel):
     is_active: bool
     created: datetime
     updated: datetime
+
+
+class NoteCreate(BaseModel):
+    text: str
+
+
+class NoteCreateResponse(BaseModel):
+    id: int
+    text: str
+    is_active: bool
+    created: datetime
+    updated: datetime

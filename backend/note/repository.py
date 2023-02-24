@@ -16,3 +16,9 @@ class NoteRepository:
         result = await self.db_session.execute(query)
         note = result.all()
         return note
+
+    async def create_note(self, text) -> Note:
+        new_note = Note(text=text)
+        self.db_session.add(new_note)
+        await self.db_session.flush()
+        return new_note
