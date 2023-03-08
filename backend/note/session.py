@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from backend.note.repository import NoteRepository
-from backend.note.schemas import NoteList, NoteCreate, NoteCreateResponse
+from backend.note.schemas import NoteList, NoteCreate, NoteCreateResponse, NoteItem, NoteUpdate
 
 
 class NoteSession:
@@ -34,3 +34,23 @@ class NoteSession:
                 created=note.created,
                 updated=note.updated,
             )
+
+    async def get_note(self, note_id: int) -> NoteItem | None:
+        async with self.session.begin():
+            note = await self.note_rep.get_note_by_id(note_id)
+            if note:
+                return NoteItem(
+                    id=note.id,
+                    text=note.text,
+                    is_active=note.is_active,
+                    created=note.created,
+                    updated=note.updated,
+                )
+
+    async def update_note(self, note_id, params) -> NoteUpdate | None:
+        async with self.session.begin():
+            note = await self.note_rep.update_note(note_id=note_id, **params)
+            if note:
+                return NoteUpdate(
+                    text=note.text
+                )

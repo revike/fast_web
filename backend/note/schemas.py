@@ -21,3 +21,15 @@ class NoteCreateResponse(BaseModel):
     is_active: bool
     created: datetime
     updated: datetime
+
+
+class NoteItem(BaseModel):
+    id: int
+    text: str
+    is_active: bool
+    created: datetime
+    updated: datetime
+
+
+class NoteUpdate(BaseModel):
+    text: str
