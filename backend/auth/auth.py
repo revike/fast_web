@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import Depends, HTTPException
+from fastapi.params import Body
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from starlette import status
@@ -10,6 +11,17 @@ from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, \
     ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer('token')
+
+
+class OAuth2PasswordRequestBody:
+
+    def __init__(
+        self,
+        username: str = Body(),
+        password: str = Body(),
+    ):
+        self.username = username
+        self.password = password
 
 
 class Auth:

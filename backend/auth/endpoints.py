@@ -1,10 +1,10 @@
 from typing import List, Dict
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from backend.auth.auth import OAuth2PasswordRequestBody
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
     UserList, UserDelete, UserUpdate, UserLogin
 from backend.auth.session import UserSession, Auth
@@ -88,7 +88,7 @@ async def update_user(
 
 @user_router.post("/login", response_model=UserLogin)
 async def login_for_access_token(
-        data: OAuth2PasswordRequestForm = Depends(),
+        data: OAuth2PasswordRequestBody = Depends(),
         session: AsyncSession = Depends(get_async_session)) -> UserLogin:
     user = await UserSession(session).auth_user(data.username, data.password)
     if not user:
