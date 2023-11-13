@@ -97,6 +97,7 @@ class UserSession:
                           'other_custom_data': [1, 2, 3, 4]},
                     expires_delta=access_token_expires,
                 )
+                refresh_token = Auth().create_refresh_token()
                 return UserLogin(
                     id=user[0].id,
                     email=user[0].email,
@@ -108,6 +109,7 @@ class UserSession:
                     created=user[0].created,
                     updated=user[0].updated,
                     access_token=access_token,
+                    refresh_token=refresh_token,
                     token_type='Bearer',
                     profile={
                         'id': user[1].id,
