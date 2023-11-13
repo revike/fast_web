@@ -25,3 +25,9 @@ alembic upgrade head
 #                f'{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
 DATABASE_URL = 'sqlite+aiosqlite:///./../db.sqlite3'
+
+# Datetime settings
+DATE_FORMAT = '%Y-%m-%d'
+TIME_FORMAT = '%H:%M'
+SECOND_FORMAT = ':%S'
+DATETIME_FORMAT = f'{DATE_FORMAT} {TIME_FORMAT}{SECOND_FORMAT}'

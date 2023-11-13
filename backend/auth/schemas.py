@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr, validator
 
 from backend.auth.validators import DefaultModel
+from backend.base.utils import date_time_format
 
 
 class UserList(BaseModel):
@@ -40,10 +41,15 @@ class UserRead(BaseModel):
     class Config:
         orm_mode = True
 
+    @validator('created', 'updated')
+    def parse_datetime(cls, value):
+        return date_time_format(value)
+
 
 class UserLogin(UserRead):
     access_token: str
     token_type: str
+    refresh_token: str
 
 
 class UserCreate(DefaultModel):
