@@ -42,6 +42,10 @@ class Auth:
         return encoded_jwt
 
     @staticmethod
+    def create_refresh_token():
+        return 'refresh_token'
+
+    @staticmethod
     async def decode_token(
             token: str = Depends(oauth2_scheme)):
         try:
