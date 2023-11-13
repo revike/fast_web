@@ -6,7 +6,7 @@ from backend.auth.repository import UserRepository
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
     UserList, UserUpdate, UserLogin
 from backend.auth.utils import HashingPassword
-from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
 
 
 class UserSession:
@@ -90,14 +90,24 @@ class UserSession:
             check_password = HashingPassword.verify_password(
                 password, user[0].hashed_password)
             if check_password:
-                access_token_expires = timedelta(
-                    minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-                access_token = Auth().create_access_token(
-                    data={'some': 'payload', 'sub': f'{user[0].phone}',
-                          'other_custom_data': [1, 2, 3, 4]},
+                access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+                access_token = Auth().create_token(
+                    data={
+                        'token_type': 'access',
+                        'sub': f'{user[0].phone}',
+                        'user_id': user[0].id
+                    },
                     expires_delta=access_token_expires,
                 )
-                refresh_token = Auth().create_refresh_token()
+                refresh_token = Auth().create_token(
+                    data={
+                        'token_type': 'refresh',
+                        'sub': f'{user[0].phone}',
+                        'user_id': user[0].id
+                    },
+                    expires_delta=refresh_token_expires,
+                )
                 return UserLogin(
                     id=user[0].id,
                     email=user[0].email,

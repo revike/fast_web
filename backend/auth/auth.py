@@ -25,9 +25,9 @@ class OAuth2PasswordRequestBody:
 
 
 class Auth:
-    @staticmethod
-    def create_access_token(
-            data: dict, expires_delta: Optional[timedelta] = None):
+
+    @classmethod
+    def create_token(cls, data: dict, expires_delta: Optional[timedelta] = None):
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
@@ -41,18 +41,16 @@ class Auth:
         )
         return encoded_jwt
 
-    @staticmethod
-    def create_refresh_token():
-        return 'refresh_token'
-
-    @staticmethod
-    async def decode_token(
-            token: str = Depends(oauth2_scheme)):
+    @classmethod
+    async def decode_token(cls, token: str = Depends(oauth2_scheme)):
         try:
             payload = jwt.decode(
                 token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
             phone: str = payload.get("sub")
-            return phone
+            token_type: str = payload.get('token_type')
+            if token_type == 'access':
+                return phone
+            error = 'Signature do not has access.'
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=error)
         except JWTError as err:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=f'{err}')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f'{err}')

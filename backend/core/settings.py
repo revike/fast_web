@@ -11,8 +11,8 @@ POSTGRES_DB = os.environ.get('POSTGRES_DB')
 
 SECRET_KEY = os.environ.get('SECRET_KEY', default='secret_key')
 ALGORITHM: str = os.environ.get('ALGORITHM', default="HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.environ.get(
-    'ACCESS_TOKEN_EXPIRE_MINUTES', default=30))
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', default=30))
+REFRESH_TOKEN_EXPIRE_MINUTES: int = int(os.environ.get('REFRESH_TOKEN_EXPIRE_MINUTES', default=60))
 
 """
 alembic init migrations
