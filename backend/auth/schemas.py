@@ -52,6 +52,11 @@ class UserLogin(UserRead):
     refresh_token: str
 
 
+class RefreshToken(BaseModel):
+    access: str
+    refresh: str
+
+
 class UserCreate(DefaultModel):
     email: EmailStr
     phone: int
