@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from backend.auth.auth import OAuth2PasswordRequestBody
+from backend.auth.auth import OAuth2PasswordRequestBody, RefreshTokenBody
 from backend.auth.schemas import UserRead, UserCreate, UserCreateResponse, \
-    UserList, UserDelete, UserUpdate, UserLogin
+    UserList, UserDelete, UserUpdate, UserLogin, RefreshToken
 from backend.auth.session import UserSession, Auth
 from backend.core.session import get_async_session
 
@@ -76,7 +76,7 @@ async def update_user(
             user_id, updated_user_params)
         if user is None:
             raise HTTPException(
-                status_code=404, detail=f"User with id {user_id} not found."
+                status_code=404, detail=f'User with id {user_id} not found.'
             )
 
         return UserUpdate(
@@ -86,7 +86,7 @@ async def update_user(
         )
 
 
-@user_router.post("/login", response_model=UserLogin)
+@user_router.post('/login', response_model=UserLogin)
 async def login_for_access_token(
         data: OAuth2PasswordRequestBody = Depends(),
         session: AsyncSession = Depends(get_async_session)) -> UserLogin:
@@ -94,6 +94,20 @@ async def login_for_access_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect phone or password",
+            detail='Incorrect phone or password',
         )
     return user
+
+
+@user_router.post('/refresh', response_model=RefreshToken)
+async def refresh_token(data: RefreshTokenBody = Depends()) -> RefreshToken:
+    if getattr(data, 'refresh'):
+        refresh_data = data.refresh
+        refresh = refresh_data.get('refresh')
+        if refresh:
+            decode_token = await Auth().decode_token(refresh)
+            return decode_token
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail='Incorrect key refresh',
+    )
