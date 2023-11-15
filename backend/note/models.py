@@ -13,5 +13,4 @@ class Note(Base):
     text: str = Column(String)
     is_active: bool = Column(Boolean, default=True, nullable=False)
     created: datetime = Column(TIMESTAMP, default=datetime.utcnow)
-    updated: datetime = Column(TIMESTAMP, default=datetime.utcnow,
-                               onupdate=datetime.utcnow)
+    updated: datetime = Column(TIMESTAMP, default=datetime.utcnow, onupdate=datetime.utcnow)

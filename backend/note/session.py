@@ -24,9 +24,7 @@ class NoteSession:
 
     async def create_note(self, body: NoteCreate) -> NoteCreateResponse:
         async with self.session.begin():
-            note = await self.note_rep.create_note(
-                text=body.text
-            )
+            note = await self.note_rep.create_note(text=body.text)
             return NoteCreateResponse(
                 id=note.id,
                 text=note.text,
@@ -51,6 +49,4 @@ class NoteSession:
         async with self.session.begin():
             note = await self.note_rep.update_note(note_id=note_id, **params)
             if note:
-                return NoteUpdate(
-                    text=note.text
-                )
+                return NoteUpdate(text=note.text)

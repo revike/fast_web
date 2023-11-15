@@ -6,13 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from backend.core.settings import DATABASE_URL
 
 # create async engine for interaction with database
-engine = create_async_engine(DATABASE_URL,
-                             connect_args={'check_same_thread': False},
-                             echo=True, future=True)
+engine = create_async_engine(DATABASE_URL, connect_args={'check_same_thread': False}, echo=True, future=True)
 
 # create session for the interaction with database
-async_session_maker = sessionmaker(engine, class_=AsyncSession,
-                                   expire_on_commit=False)
+async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
