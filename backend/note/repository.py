@@ -38,10 +38,8 @@ class NoteRepository:
         note = res.fetchone()
         if note:
             try:
-                query_update = update(Note).filter_by(
-                    id=note_id, is_active=True).values(kwargs)
+                query_update = update(Note).filter_by(id=note_id, is_active=True).values(kwargs)
                 await self.db_session.execute(query_update)
                 return note[0]
             except IntegrityError as err:
-                raise HTTPException(
-                    status_code=503, detail=f'{err.__context__}')
+                raise HTTPException(status_code=503, detail=f'{err.__context__}')

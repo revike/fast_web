@@ -15,6 +15,5 @@ class DefaultModel(BaseModel):
     @validator('phone', check_fields=False)
     def validate_phone(cls, value):
         if not cls.validate_user_phone(value):
-            raise HTTPException(
-                status_code=422, detail='Phone entered incorrectly')
+            raise HTTPException(status_code=422, detail='Phone entered incorrectly')
         return value

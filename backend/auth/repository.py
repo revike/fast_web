@@ -14,10 +14,8 @@ class UserRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def create_user(self, email: str, phone: int,
-                          hashed_password: str) -> User:
-        new_user = User(email=email, phone=phone, username=f'{phone}',
-                        hashed_password=hashed_password)
+    async def create_user(self, email: str, phone: int, hashed_password: str) -> User:
+        new_user = User(email=email, phone=phone, username=f'{phone}', hashed_password=hashed_password)
         self.db_session.add(new_user)
         try:
             await self.db_session.flush()
@@ -27,17 +25,14 @@ class UserRepository:
             return new_user
         except IntegrityError as err:
             error = f'{err.__context__}'.replace('user.username', 'user.phone')
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=error)
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=error)
 
     async def delete_user(self, user_id) -> Union[int | None]:
         query = select(User).filter_by(id=user_id, is_active=True)
         res = await self.db_session.execute(query)
         user = res.fetchone()
         if user:
-            query_update = update(User).filter_by(
-                id=user_id, is_active=True).values(is_active=False)
+            query_update = update(User).filter_by(id=user_id, is_active=True).values(is_active=False)
             await self.db_session.execute(query_update)
             return user_id
 
@@ -62,9 +57,7 @@ class UserRepository:
             return profile[0]
 
     async def get_user_by_phone(self, phone) -> Union[User | None]:
-        query = select(User, Profile).join(
-            User, Profile.user == User.id).filter_by(
-            phone=phone, is_active=True)
+        query = select(User, Profile).join(User, Profile.user == User.id).filter_by(phone=phone, is_active=True)
         res = await self.db_session.execute(query)
         user = res.fetchone()
         if user:
@@ -76,8 +69,7 @@ class UserRepository:
         user = res.fetchone()
         if user:
             try:
-                query_update = update(User).filter_by(
-                    id=user_id, is_active=True).values(kwargs)
+                query_update = update(User).filter_by(id=user_id, is_active=True).values(kwargs)
                 await self.db_session.execute(query_update)
                 return user[0]
             except IntegrityError as err:

@@ -14,9 +14,7 @@ note_router = APIRouter()
 
 @note_router.get('/', response_model=List[NoteList])
 async def list_notes(
-        session: AsyncSession = Depends(get_async_session),
-        token: str = Depends(Auth.decode_token)
-) -> List:
+        session: AsyncSession = Depends(get_async_session), token: str = Depends(Auth.decode_token)) -> List:
     if token:
         notes = await NoteSession(session).get_notes()
         return notes
@@ -39,10 +37,7 @@ async def note_item(
     if token:
         note = await NoteSession(session).get_note(note_id)
         if note is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"User with id {note_id} not found."
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with id {note_id} not found.')
         return note
 
 
@@ -55,17 +50,9 @@ async def note_update(
     if token:
         updated_note_params = body.dict(exclude_none=True)
         if updated_note_params == {}:
-            raise HTTPException(
-                status_code=422,
-                detail='You must specify at least one note update option',
-            )
+            raise HTTPException(status_code=422, detail='You must specify at least one note update option')
         note = await NoteSession(session).update_note(
             note_id, updated_note_params)
         if note is None:
-            raise HTTPException(
-                status_code=404, detail=f"User with id {note_id} not found."
-            )
-
-        return NoteUpdate(
-            username=note.text
-        )
+            raise HTTPException(status_code=404, detail=f'User with id {note_id} not found.')
+        return NoteUpdate(username=note.text)
